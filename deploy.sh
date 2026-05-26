@@ -240,6 +240,24 @@ run_setup() {
     save_config DUNE_DB_PASS "$db_pass"; export DUNE_DB_PASS="$db_pass"
   fi
 
+  # 5. API token
+  printf 'HTTP API token (used by dune-admin to talk to the bot):\n'
+  local api_token="${API_TOKEN:-}"
+  if [ -n "$api_token" ]; then
+    printf '  %s API token already set\n' "$o"
+  else
+    printf '  API token (leave blank to skip — bot API will reject all requests): '
+    read -rs api_token; printf '\n'
+    if [ -n "$api_token" ]; then
+      save_config API_TOKEN "$api_token"
+      export API_TOKEN="$api_token"
+      printf '  %s API token saved\n' "$o"
+    else
+      printf '  %s skipped — set API_TOKEN in .deploy-config later\n' "$x"
+    fi
+  fi
+  printf '\n'
+
   printf '\n%s Setup complete — config saved to .deploy-config\n\n' "$o"
 }
 
@@ -344,6 +362,7 @@ DB_PORT="${DUNE_DB_PORT:-${DETECTED_DB_PORT:-$(manifest_value DB_PORT)}}"
 DB_USER="${DUNE_DB_USER:-$(manifest_value DB_USER)}"
 DB_PASS="${DUNE_DB_PASS:-$(manifest_value DB_PASS)}"
 DB_NAME="$(manifest_value DB_NAME)"
+API_TOKEN="${API_TOKEN:-$(manifest_value API_TOKEN)}"
 
 [ -n "$DB_PORT" ] || DB_PORT="15432"
 [ -n "$DB_NAME" ] || DB_NAME="dune"
@@ -403,6 +422,7 @@ set_manifest_value "$RENDERED_MANIFEST" DB_PORT "$DB_PORT"
 set_manifest_value "$RENDERED_MANIFEST" DB_USER "$DB_USER"
 set_manifest_value "$RENDERED_MANIFEST" DB_PASS "$DB_PASS"
 set_manifest_value "$RENDERED_MANIFEST" DB_NAME "$DB_NAME"
+set_manifest_value "$RENDERED_MANIFEST" API_TOKEN "$API_TOKEN"
 vm_ssh "sudo kubectl apply -f -" < "$RENDERED_MANIFEST"
 
 # ── Rollout ───────────────────────────────────────────────────────────────────
