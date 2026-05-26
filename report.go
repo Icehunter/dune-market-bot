@@ -8,6 +8,12 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
+// reportData returns per-item sales rows for the API /report endpoint.
+// Stub implementation — real query added in Task 6.
+func (e *Exchange) reportData(ctx context.Context) []reportRow {
+	return nil
+}
+
 type reportRow struct {
 	Template string
 	Sold     int64

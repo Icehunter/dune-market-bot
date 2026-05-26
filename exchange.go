@@ -18,6 +18,24 @@ const (
 	orderExpirySecs  = int64(24 * 3600)
 )
 
+// statusSnap is returned by GET /status.
+type statusSnap struct {
+	Uptime       string `json:"uptime"`
+	LastBuyTick  string `json:"last_buy_tick"`
+	LastListTick string `json:"last_list_tick"`
+	ListingCount int64  `json:"listing_count"`
+	Balance      int64  `json:"balance"`
+	ErrorCount   int64  `json:"error_count"`
+}
+
+func (e *Exchange) statusSnapshot(start time.Time) statusSnap {
+	return statusSnap{
+		Uptime:       time.Since(start).Round(time.Second).String(),
+		LastBuyTick:  "never",
+		LastListTick: "never",
+	}
+}
+
 // gradeKey groups listings by template + quality grade for per-grade quota tracking.
 type gradeKey struct {
 	tmpl  string
