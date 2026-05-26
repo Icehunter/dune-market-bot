@@ -78,6 +78,7 @@ spec:
           ports:
             - name: http-api
               containerPort: 8081
+              hostPort: 8081
               protocol: TCP
           livenessProbe:
             httpGet:
